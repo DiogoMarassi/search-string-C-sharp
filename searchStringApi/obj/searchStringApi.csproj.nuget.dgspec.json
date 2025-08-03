@@ -1,0 +1,92 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\DiogoMarassi\\Desktop\\search-string-C-sharp\\searchStringApi\\searchStringApi.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\DiogoMarassi\\Desktop\\search-string-C-sharp\\searchStringApi\\searchStringApi.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\DiogoMarassi\\Desktop\\search-string-C-sharp\\searchStringApi\\searchStringApi.csproj",
+        "projectName": "searchStringApi",
+        "projectPath": "C:\\Users\\DiogoMarassi\\Desktop\\search-string-C-sharp\\searchStringApi\\searchStringApi.csproj",
+        "packagesPath": "C:\\Users\\DiogoMarassi\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\DiogoMarassi\\Desktop\\search-string-C-sharp\\searchStringApi\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\DiogoMarassi\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Lucene.Net.Analysis.Common": {
+              "target": "Package",
+              "version": "[4.8.0-beta00017, )"
+            },
+            "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[9.0.7, )"
+            },
+            "PDFsharp": {
+              "target": "Package",
+              "version": "[6.2.1, )"
+            },
+            "Porter2Stemmer": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
