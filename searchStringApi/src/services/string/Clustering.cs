@@ -2,12 +2,19 @@ using MyApp.Models;
 
 namespace MyApp.Services.String;
 
-/// <summary>
 /// Serviço estático que executa o algoritmo K-Means em 2D.
-/// </summary>
-public static class Clustering
+public class Clustering
 {
-    public static KMeansResult Cluster(List<Point> data, int k, int maxIterations = 50)
+    private readonly Embedding _embeddingService;
+
+    public Clustering(
+        Embedding embeddingService
+    )
+    {
+        _embeddingService = embeddingService;
+    }
+
+    public KMeansResult Cluster(List<Point> data, int k, int maxIterations = 50)
     {
         var rand = new Random();
         var centroids = new List<Point>();
@@ -34,6 +41,49 @@ public static class Clustering
         }
 
         return new KMeansResult { Centroids = centroids, Labels = labels };
+    }
+
+    public async Task<List<object>> ClusterInners(KMeansResult externalClusters, List<string> topNgrams, int innerClustersQntd = 2)
+    {
+        var resultado = externalClusters.Labels
+            .Select((label, index) => new { label, term = topNgrams[index] })
+            .GroupBy(x => x.label)
+            .Select(g => new
+            {
+                ClusterId = g.Key,
+                Terms = g.Select(x => x.term).ToList()
+            })
+            .ToList();
+
+        // Para cada cluster externo, clusterizar internamente
+        var resultadoComInternos = new List<object>();
+
+        foreach (var cluster in resultado)
+        {
+            // Embeddings para os termos deste cluster
+            var newEmbeddings = await _embeddingService.GenerateAsync(cluster.Terms);
+            var newPoints = newEmbeddings.Select(e => new Point { Vector = e }).ToList();
+
+            // Nova clusterização interna
+            var innerClusters = Cluster(newPoints, innerClustersQntd);
+
+            // Mapeia termos para clusters internos
+            var innerResultado = innerClusters.Labels
+                .Select((innerLabel, index) => new { innerLabel, term = cluster.Terms[index] })
+                .GroupBy(x => x.innerLabel)
+                .Select(g => g.Select(x => x.term).ToList())
+                .ToList();
+
+            // Cria objeto final simples
+            resultadoComInternos.Add(new
+            {
+                ClusterId = cluster.ClusterId,
+                Terms = cluster.Terms,
+                InnerClusters = innerResultado
+            });
+        }
+
+        return resultadoComInternos;
     }
 
     private static int ClosestCentroid(Point point, List<Point> centroids)

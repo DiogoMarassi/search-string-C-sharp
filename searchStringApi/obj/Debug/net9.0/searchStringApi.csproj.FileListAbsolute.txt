@@ -47,3 +47,5 @@ C:\Users\DiogoMarassi\Desktop\search-string-C-sharp\searchStringApi\bin\Debug\ne
 C:\Users\DiogoMarassi\Desktop\search-string-C-sharp\searchStringApi\bin\Debug\net9.0\Lucene.Net.dll
 C:\Users\DiogoMarassi\Desktop\search-string-C-sharp\searchStringApi\bin\Debug\net9.0\Lucene.Net.Analysis.Common.dll
 C:\Users\DiogoMarassi\Desktop\search-string-C-sharp\searchStringApi\bin\Debug\net9.0\Porter2Stemmer.dll
+C:\Users\DiogoMarassi\Desktop\search-string-C-sharp\searchStringApi\obj\Debug\net9.0\searchStringApi.sourcelink.json
+C:\Users\DiogoMarassi\Desktop\search-string-C-sharp\searchStringApi\bin\Debug\net9.0\src\services\teste.json
