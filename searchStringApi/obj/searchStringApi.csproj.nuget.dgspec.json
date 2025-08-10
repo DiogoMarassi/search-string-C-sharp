@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\DiogoMarassi\\Desktop\\search-string-C-sharp\\searchStringApi\\searchStringApi.csproj": {}
+    "C:\\Users\\Diogo Marassi\\Desktop\\search-string-C-sharp\\searchStringApi\\searchStringApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\DiogoMarassi\\Desktop\\search-string-C-sharp\\searchStringApi\\searchStringApi.csproj": {
+    "C:\\Users\\Diogo Marassi\\Desktop\\search-string-C-sharp\\searchStringApi\\searchStringApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\DiogoMarassi\\Desktop\\search-string-C-sharp\\searchStringApi\\searchStringApi.csproj",
+        "projectUniqueName": "C:\\Users\\Diogo Marassi\\Desktop\\search-string-C-sharp\\searchStringApi\\searchStringApi.csproj",
         "projectName": "searchStringApi",
-        "projectPath": "C:\\Users\\DiogoMarassi\\Desktop\\search-string-C-sharp\\searchStringApi\\searchStringApi.csproj",
-        "packagesPath": "C:\\Users\\DiogoMarassi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\DiogoMarassi\\Desktop\\search-string-C-sharp\\searchStringApi\\obj\\",
+        "projectPath": "C:\\Users\\Diogo Marassi\\Desktop\\search-string-C-sharp\\searchStringApi\\searchStringApi.csproj",
+        "packagesPath": "C:\\Users\\Diogo Marassi\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Diogo Marassi\\Desktop\\search-string-C-sharp\\searchStringApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\DiogoMarassi\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Diogo Marassi\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -84,7 +84,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -2,6 +2,7 @@ using MyApp.Services;
 using MyApp.Utilities;
 using MyApp.Services.pdf;
 using MyApp.Services.String;
+using MyApp.Services.Search;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +41,21 @@ builder.Services.AddScoped<Embedding>(sp =>
 });
 
 builder.Services.AddScoped<StringGeneratorService>();
+builder.Services.AddHttpClient<OpenAlex>();
+builder.Services.AddHttpClient<Semantic>(client =>
+{
+    client.BaseAddress = new Uri("https://api.semanticscholar.org");
+    client.DefaultRequestHeaders.Add("User-Agent", "MyApp");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+
+builder.Services.AddScoped<CombinePapersService>(
+    sp => new CombinePapersService(
+        sp.GetRequiredService<Semantic>(),
+        sp.GetRequiredService<OpenAlex>()
+    )
+);
+builder.Services.AddHttpClient<SnowballingService>();
 
 // Adiciona serviços de controllers e Swagger
 builder.Services.AddControllers();

@@ -12,11 +12,11 @@ public class PdfReaderController : ControllerBase
 
     public PdfReaderController(PdfReaderService pdfReader)
     {
-        _pdfReader = pdfReader;
+        _pdfReader = pdfReader ?? throw new ArgumentNullException(nameof(pdfReader));
     }
 
     /// Processa todos os PDFs da pasta indicada e retorna dados extraídos.
-    [HttpPost("process")]
+    [HttpPost("read-pdf")]
     [ProducesResponseType(typeof(List<ArticleData>), StatusCodes.Status200OK)]
     public ActionResult<List<ArticleData>> Process([FromBody] ProcessFolderRequest request)
     {

@@ -8,9 +8,7 @@ namespace MyApp.Controllers;
 [Route("api/[controller]")]
 public class ClusteringController : ControllerBase
 {
-    /// <summary>
     /// Executa clusterização K-Means em uma lista de pontos 2D.
-    /// </summary>
     [HttpPost("kmeans")]
     public IActionResult RunKMeans([FromBody] KMeansRequest request)
     {

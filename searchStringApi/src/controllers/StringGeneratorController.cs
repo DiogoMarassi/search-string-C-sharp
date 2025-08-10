@@ -13,15 +13,15 @@ public class StringGeneratorController : ControllerBase
 
     public StringGeneratorController(StringGeneratorService stringGeneratorService)
     {
-        _stringGeneratorService = stringGeneratorService;
+        _stringGeneratorService = stringGeneratorService ?? throw new ArgumentNullException(nameof(stringGeneratorService));
+        // Injeção de dependência do serviço de geração de strings
     }
 
-    /// <summary>
+
     /// Processa PDFs de uma pasta e retorna clusters baseados em embeddings do Nomic.
-    /// </summary>
     /// <param name="request">Caminho da pasta e número de clusters desejado.</param>
     /// <returns>Clusters gerados a partir dos embeddings dos abstracts.</returns>
-    [HttpPost("generatestring")]
+    [HttpPost("generate-string")]
     [ProducesResponseType(typeof(KMeansResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
