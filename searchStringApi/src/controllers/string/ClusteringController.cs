@@ -8,8 +8,6 @@ namespace MyApp.Controllers;
 [Route("api/[controller]")]
 public class ClusteringController : ControllerBase
 {
-<<<<<<< HEAD:searchStringApi/src/controllers/string/ClusteringController.cs
-=======
     private readonly Clustering _clusteringService;
     private readonly Embedding _embeddingService;
     // A API key poderia vir de appsettings.json ou variável de ambiente
@@ -21,7 +19,6 @@ public class ClusteringController : ControllerBase
     }
 
 
->>>>>>> 2a85aa4cdea0e2a43f8ca3c98ab6139f9b5b7abc:searchStringApi/src/controllers/ClusteringController.cs
     /// Executa clusterização K-Means em uma lista de pontos 2D.
     [HttpPost("kmeans")]
     public IActionResult RunKMeans([FromBody] KMeansRequest request)

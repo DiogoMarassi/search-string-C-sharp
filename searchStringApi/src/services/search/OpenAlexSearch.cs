@@ -20,14 +20,14 @@ public sealed class OpenAlex
         _http.BaseAddress = new Uri("https://api.openalex.org");
     }
 
-    public async Task<IReadOnlyList<PaperMinerArticle>> FetchOpenAlexAsync(
+    public async Task<IReadOnlyList<ArticlePaperMiner>> FetchOpenAlexAsync(
         Dictionary<string, List<string>> clusters,
         int startYear,
         int endYear,
         int securityLimit,
         CancellationToken cancellationToken = default)
     {
-        if (securityLimit <= 0) return Array.Empty<PaperMinerArticle>();
+        if (securityLimit <= 0) return Array.Empty<ArticlePaperMiner>();
 
         var formattedQuery = FormatOpenAlexQuery(clusters);
         var allPapers = new List<OpenAlexPaperRaw>(Math.Min(securityLimit, 1024));
@@ -73,10 +73,10 @@ public sealed class OpenAlex
         return TransformArticlesOpen(allPapers.Take(securityLimit));
     }
 
-    public IReadOnlyList<PaperMinerArticle> TransformArticlesOpen(IEnumerable<OpenAlexPaperRaw> articles) =>
+    public IReadOnlyList<ArticlePaperMiner> TransformArticlesOpen(IEnumerable<OpenAlexPaperRaw> articles) =>
         articles.Select(TransformOpenAlexPaper).ToList();
 
-    private static PaperMinerArticle TransformOpenAlexPaper(OpenAlexPaperRaw paper)
+    private static ArticlePaperMiner TransformOpenAlexPaper(OpenAlexPaperRaw paper)
     {
         var primaryLocation = paper.PrimaryLocation ?? new OpenAlexPrimaryLocation();
         var source = primaryLocation.Source ?? new OpenAlexSource();
@@ -89,33 +89,30 @@ public sealed class OpenAlex
             if (match.Success) doi = match.Value;
         }
 
-        return new PaperMinerArticle
+        return new ArticlePaperMiner
         {
-            ApiPaperMiner = new ApiPaperMiner
-            {
-                Engines = new List<string>(),
-                Year = paper.PublicationYear,
-                Title = paper.Title,
-                Authors = paper.Authorships?
-                    .Select(a => a.Author)
-                    .Where(a => a is { })
-                    .Select(author => new AuthorDto
-                    {
-                        AuthorId = author!.Id,
-                        Name = author.DisplayName
-                    })
-                    .ToList(),
-                PublicationDate = paper.PublicationDate,
-                Snippet = DecodeOpenAlexAbstract(paper.AbstractInvertedIndex),
-                Issn = source.IssnL,
-                CitationCount = paper.CitedByCount ?? 0,
-                InfluentialCitationCount = paper.Score ?? 0,
-                Doi = doi,
-                Url = primaryLocation.PdfUrl,
-                SourceName = source.DisplayName ?? "No data",
-                Type = paper.Type ?? "unknown",
-                Source = "openalex"
-            }
+            Source = "open_alex",
+            Doi = doi,
+            Title = paper.Title,
+            Abstract = DecodeOpenAlexAbstract(paper.AbstractInvertedIndex),
+            Authors = paper.Authorships?.Select(a => a.Author?.DisplayName ?? "").ToList(),
+            Url = primaryLocation.PdfUrl,
+            Venue = paper.PrimaryLocation?.Source?.DisplayName ?? "",
+            PublicationDate = paper.PublicationDate,
+            CitationCount = paper.CitedByCount ?? 0,
+            Type = paper.TypeCrossref ?? null,
+            IsOpenAccess = (
+                paper.OpenAccess?.IsOa == true
+                || paper.BestOaLocation?.IsOa == true
+                || (!string.IsNullOrWhiteSpace(paper.OpenAccess?.OaStatus) &&
+                    new[] { "gold", "green", "bronze", "hybrid" }
+                        .Contains(paper.OpenAccess.OaStatus.ToLower()))
+            )
+            && (
+                !string.IsNullOrWhiteSpace(paper.BestOaLocation?.PdfUrl)
+                || !string.IsNullOrWhiteSpace(paper.PrimaryLocation?.PdfUrl)
+            ),
+            RelevanceMetric = paper.Score ?? 0,
         };
     }
 

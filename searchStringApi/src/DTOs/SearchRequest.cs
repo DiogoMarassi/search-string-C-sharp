@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;   
-
+using System.ComponentModel.DataAnnotations;
+namespace MyApp.DTOs;
 public sealed class CombinePapersRequest
 {
     [Required]
@@ -14,10 +14,6 @@ public sealed class CombinePapersRequest
 
     [Range(1, 10_000)]
     public int SecurityLimit { get; init; } = 500;
-
-    public bool WithPdf { get; init; } = false;
-    public bool WithIssn { get; init; } = false;
-    public bool WithPreprint { get; init; } = false;
 }
 
 public sealed class ClusteredSearchRequest

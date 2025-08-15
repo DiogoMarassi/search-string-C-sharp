@@ -19,10 +19,12 @@ public sealed class OpenAlexPaperRaw
     [JsonPropertyName("publication_date")] public string? PublicationDate { get; set; }
     [JsonPropertyName("abstract_inverted_index")] public Dictionary<string, List<int>>? AbstractInvertedIndex { get; set; }
     [JsonPropertyName("primary_location")] public OpenAlexPrimaryLocation? PrimaryLocation { get; set; }
+    [JsonPropertyName("best_oa_location")] public OpenAlexOALocation? BestOaLocation { get; set; }
+    [JsonPropertyName("open_access")] public OpenAlexOpenAccess? OpenAccess { get; set; }
     [JsonPropertyName("cited_by_count")] public int? CitedByCount { get; set; }
     [JsonPropertyName("score")] public int? Score { get; set; }
     [JsonPropertyName("doi")] public string? Doi { get; set; }
-    [JsonPropertyName("type")] public string? Type { get; set; }
+    [JsonPropertyName("type_crossref")] public string? TypeCrossref { get; set; }
 }
 
 public sealed class OpenAlexAuthorship
@@ -40,6 +42,18 @@ public sealed class OpenAlexPrimaryLocation
 {
     [JsonPropertyName("source")] public OpenAlexSource? Source { get; set; }
     [JsonPropertyName("pdf_url")] public string? PdfUrl { get; set; }
+}
+
+public sealed class OpenAlexOALocation
+{
+    [JsonPropertyName("is_oa")] public bool? IsOa { get; set; }
+    [JsonPropertyName("pdf_url")] public string? PdfUrl { get; set; }
+}
+
+public sealed class OpenAlexOpenAccess
+{
+    [JsonPropertyName("is_oa")] public bool? IsOa { get; set; }
+    [JsonPropertyName("oa_status")] public string? OaStatus { get; set; }
 }
 
 public sealed class OpenAlexSource

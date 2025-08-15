@@ -15,34 +15,8 @@ public sealed class CombinePapersService
         _openAlex = openAlex ?? throw new ArgumentNullException(nameof(openAlex));
     }
 
-    public static IReadOnlyList<PaperMinerArticle> FilterArticlesWithPdf(IEnumerable<PaperMinerArticle> articles) =>
-        articles
-            .Where(a => !string.IsNullOrWhiteSpace(a.ApiPaperMiner.Url))
-            .ToList();
 
-    public static IReadOnlyList<PaperMinerArticle> FilterArticlesWithIssn(IEnumerable<PaperMinerArticle> articles) =>
-        articles
-            .Where(a => !string.IsNullOrWhiteSpace(a.ApiPaperMiner.Issn))
-            .ToList();
-
-    public static IReadOnlyList<PaperMinerArticle> FilterArticlesWithPreprint(IEnumerable<PaperMinerArticle> articles)
-    {
-        var list = new List<PaperMinerArticle>();
-        foreach (var article in articles)
-        {
-            var content = article.ApiPaperMiner;
-            var doi = (content.Doi ?? "").ToLowerInvariant();
-            var type = (content.Type ?? "").ToLowerInvariant();
-
-            if (doi.Contains("arxiv") || doi.Contains("preprint")) continue;
-            if (type == "preprint") continue;
-
-            list.Add(article);
-        }
-        return list;
-    }
-
-    private static int CountNonEmptyFields(ApiPaperMiner article)
+    private static int CountNonEmptyFields(ArticlePaperMiner article)
     {
         return article.GetType()
             .GetProperties()
@@ -54,41 +28,39 @@ public sealed class CombinePapersService
                 if (value is string str)
                     return !string.IsNullOrWhiteSpace(str);
 
-                if (value is ICollection<object> coll)
+                if (value is System.Collections.ICollection coll)
                     return coll.Count > 0;
 
                 return true;
             });
     }
 
-    public static IReadOnlyList<ApiPaperMiner> CombineResults(
-        IEnumerable<PaperMinerArticle> semanticPapers,
-        IEnumerable<PaperMinerArticle> openAlexPapers)
+
+    public static IReadOnlyList<ArticlePaperMiner> CombineResults(
+        IEnumerable<ArticlePaperMiner> semanticPapers,
+        IEnumerable<ArticlePaperMiner> openAlexPapers)
     {
         Console.WriteLine("Combinando resultados de ambas as fontes...");
 
         var combined = semanticPapers.Concat(openAlexPapers).ToList();
+
+        // Embaralhar para não privilegiar uma fonte
         var rnd = new Random();
         combined = combined.OrderBy(_ => rnd.Next()).ToList();
 
-        var uniquePapers = new Dictionary<string, ApiPaperMiner>(StringComparer.OrdinalIgnoreCase);
+        var uniquePapers = new Dictionary<string, ArticlePaperMiner>();
         int duplicados = 0, semDoi = 0;
 
-        foreach (var article in combined)
+        foreach (var content in combined)
         {
-            var content = article.ApiPaperMiner;
             var doi = content.Doi?.Trim().ToLowerInvariant();
 
             if (string.IsNullOrWhiteSpace(doi))
             {
                 semDoi++;
                 var title = Regex.Replace(content.Title ?? "", @"\s+", " ").Trim().ToLowerInvariant();
-                var year = (content.Year?.ToString() ?? "").Trim();
-                var firstAuthor = content.Authors?.FirstOrDefault() is AuthorDto authDict
-                    ? authDict.Name?.Trim().ToLowerInvariant()
-                    : "unknown";
-
-                doi = $"{title}_{year}_{firstAuthor}";
+                var date = content.PublicationDate ?? "";
+                doi = $"{title}_{date}"; // Usa como chave fake
             }
 
             if (uniquePapers.ContainsKey(doi))
@@ -109,11 +81,13 @@ public sealed class CombinePapersService
 
         Console.WriteLine($"Total de artigos únicos após combinação: {uniquePapers.Count}");
         Console.WriteLine($"Artigos considerados duplicados: {duplicados}");
+        Console.WriteLine($"Artigos sem DOI: {semDoi}");
 
         return uniquePapers.Values.ToList();
     }
 
-    public static object GroupArticlesByKeyword(IEnumerable<ApiPaperMiner> papers, IEnumerable<string> keywords, int startYear, int endYear) =>
+
+    public static object GroupArticlesByKeyword(IReadOnlyList<ArticlePaperMiner> papers, IEnumerable<string> keywords, int startYear, int endYear) =>
         new
         {
             keyword = keywords,
@@ -122,21 +96,15 @@ public sealed class CombinePapersService
             articles = papers
         };
 
-    // -----------------------
-    // Execução principal
-    // -----------------------
-    public async Task<IReadOnlyList<ApiPaperMiner>> FetchAllPapersAsync(
+    public async Task<IReadOnlyList<ArticlePaperMiner>> FetchAllPapersAsync(
         IEnumerable<string> keywords,
         int startYear,
         int endYear,
-        bool withPdf,
-        bool withIssn,
         int securityLimit,
-        bool withPreprint,
         CancellationToken cancellationToken = default)
     {
-        var semanticPapers = new List<PaperMinerArticle>();
-        var openAlexPapers = new List<PaperMinerArticle>();
+        var semanticPapers = new List<ArticlePaperMiner>();
+        var openAlexPapers = new List<ArticlePaperMiner>();
 
         foreach (var keyword in keywords)
         {
@@ -160,30 +128,9 @@ public sealed class CombinePapersService
             openAlexPapers.AddRange(openAlexResults);
         }
 
-        if (withPdf)
-        {
-            Console.WriteLine("Filtering papers with PDF availability...");
-            semanticPapers = FilterArticlesWithPdf(semanticPapers).ToList();
-            openAlexPapers = FilterArticlesWithPdf(openAlexPapers).ToList();
-        }
 
-        if (withIssn)
-        {
-            Console.WriteLine("Filtering papers with ISSN availability...");
-            semanticPapers = FilterArticlesWithIssn(semanticPapers).ToList();
-            openAlexPapers = FilterArticlesWithIssn(openAlexPapers).ToList();
-        }
-
-        if (!withPreprint)
-        {
-            Console.WriteLine("Filtering papers without preprint ...");
-            semanticPapers = FilterArticlesWithPreprint(semanticPapers).ToList();
-            openAlexPapers = FilterArticlesWithPreprint(openAlexPapers).ToList();
-        }
 
         var combinedPapers = CombineResults(semanticPapers, openAlexPapers);
-
-        var finalData = GroupArticlesByKeyword(combinedPapers.Take(securityLimit), keywords, startYear, endYear);
 
         Console.WriteLine("All results have been saved.");
 

@@ -1,6 +1,7 @@
 #nullable enable
 using Microsoft.AspNetCore.Mvc;
 using MyApp.Services.Search;
+using MyApp.DTOs;
 
 namespace YourApp.Api.Controllers;
 
@@ -16,9 +17,9 @@ public sealed class OpenAlexController : ControllerBase
     }
 
     [HttpPost("search")]
-    [ProducesResponseType(typeof(IReadOnlyList<PaperMinerArticle>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IReadOnlyList<ArticlePaperMiner>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<IReadOnlyList<PaperMinerArticle>>> Search(
+    public async Task<ActionResult<IReadOnlyList<ArticlePaperMiner>>> Search(
         [FromBody] ClusteredSearchRequest request,
         CancellationToken cancellationToken)
     {

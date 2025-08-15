@@ -21,33 +21,36 @@ public sealed class Semantic
         // Mas vou usar URL absoluta no método para ficar explícito.
     }
 
-    public async Task<IReadOnlyList<PaperMinerArticle>> FetchSemanticAsync(
+    public async Task<IReadOnlyList<ArticlePaperMiner>> FetchSemanticAsync(
         Dictionary<string, List<string>> clusters,
         int startYear,
         int endYear,
         int securityLimit,
         CancellationToken cancellationToken = default)
     {
-        if (securityLimit <= 0) return Array.Empty<PaperMinerArticle>();
+        if (securityLimit <= 0) return Array.Empty<ArticlePaperMiner>();
 
         var formattedQuery = FormatSemanticQuery(clusters);
         var encodedQuery = Uri.EscapeDataString(formattedQuery);
 
         var fields = string.Join(",",
             "title",
-            "year",
+            "abstract",
             "authors",
-            "openAccessPdf",
             "externalIds",
+            "openAccessPdf",
             "publicationVenue",
+            "publicationDate",
             "citationCount",
+            "publicationTypes",
+            "isOpenAccess",
             "influentialCitationCount"
         );
 
         var baseUrl =
             $"https://api.semanticscholar.org/graph/v1/paper/search/bulk?query={encodedQuery}&fields={fields}&year={startYear}-{endYear}";
 
-        var accumulated = new List<SemanticPaperRaw>(capacity: Math.Min(securityLimit, 1024));
+        var accumulated = new List<ArticleSemanticRaw>(capacity: Math.Min(securityLimit, 1024));
         string? token = null;
 
         try
@@ -65,7 +68,7 @@ public sealed class Semantic
                 var payload = await JsonSerializer.DeserializeAsync<SemanticBulkResponse>(stream, JsonOpts, cancellationToken)
                                ?? new SemanticBulkResponse();
 
-                var batch = payload.Data ?? new List<SemanticPaperRaw>();
+                var batch = payload.Data ?? new List<ArticleSemanticRaw>();
                 if (batch.Count > 0)
                 {
                     // respeita o securityLimit
@@ -95,34 +98,28 @@ public sealed class Semantic
         return TransformArticlesSemantic(accumulated);
     }
 
-    public IReadOnlyList<PaperMinerArticle> TransformArticlesSemantic(IEnumerable<SemanticPaperRaw> articles) =>
+    public IReadOnlyList<ArticlePaperMiner> TransformArticlesSemantic(IEnumerable<ArticleSemanticRaw> articles) =>
         articles.Select(TransformSemanticPaper).ToList();
 
-    private static PaperMinerArticle TransformSemanticPaper(SemanticPaperRaw paper)
+    private static ArticlePaperMiner TransformSemanticPaper(ArticleSemanticRaw paper)
     {
-        var doiLower = (paper.ExternalIds?.Doi ?? string.Empty).ToLowerInvariant();
+        var doiLower = (paper.ExternalIds?.DOI ?? string.Empty).ToLowerInvariant();
         var publicationVenue = paper.PublicationVenue ?? new PublicationVenue();
-        var articleType = doiLower.Contains("arxiv") ? "preprint" : "unknown"; // mantido para paridade
 
-        return new PaperMinerArticle
+        return new ArticlePaperMiner
         {
-            ApiPaperMiner = new ApiPaperMiner
-            {
-                Engines = new List<string>(),
-                Year = paper.Year,
-                Title = paper.Title,
-                Snippet = paper.Tldr?.Text,
-                PublicationDate = paper.PublicationDate,
-                Authors = paper.Authors,
-                Issn = publicationVenue.Issn,
-                CitationCount = paper.CitationCount,
-                InfluentialCitationCount = paper.InfluentialCitationCount,
-                Doi = paper.ExternalIds?.Doi,
-                Url = paper.OpenAccessPdf?.Url,
-                SourceName = publicationVenue.Name ?? "No data",
-                Type = publicationVenue.Type,
-                Source = "semantic_scholar"
-            }
+            Source = "semantic_scholar",
+            Doi = paper.ExternalIds?.DOI,
+            Title = paper.Title,
+            Abstract = paper.Abstract,
+            Authors = paper.Authors?.Select(a => a.Name ?? "").ToList(),
+            Url = paper.OpenAccessPdf?.Url,
+            Venue = paper.Venue ?? publicationVenue.Name,
+            PublicationDate = paper.PublicationDate,
+            CitationCount = paper.CitationCount,
+            Type = paper.PublicationTypes ?? null,
+            IsOpenAccess = paper.IsOpenAccess,
+            RelevanceMetric = paper.InfluentialCitationCount,
         };
     }
 

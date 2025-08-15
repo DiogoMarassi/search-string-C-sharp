@@ -12,14 +12,19 @@ public class EmbeddingController : ControllerBase
     // A API key poderia vir de appsettings.json ou variável de ambiente
     public EmbeddingController(IConfiguration config)
     {
-        // ajustar depois config
-        _embeddingService = new Embedding("nk-S_CvPLdfWOzJyL0HFgXFj1dDEBK0gxft-Fw1HsAoKKU");
+        var apiKey = Environment.GetEnvironmentVariable("NOMIC_API_KEY");
+
+        if (string.IsNullOrWhiteSpace(apiKey))
+            throw new InvalidOperationException("NOMIC_API_KEY não definida no ambiente.");
+
+        _embeddingService = new Embedding(apiKey);
+
     }
 
 
     /// Gera embeddings para uma lista de textos usando o modelo Nomic.
-    /// <param name="request">Lista de textos</param>
-    /// <returns>Lista de embeddings (um vetor de floats por texto)</returns>
+    /// Lista de textos
+    /// Lista de embeddings (um vetor de floats por texto)
     [HttpPost("embedding")]
     [ProducesResponseType(typeof(NomicEmbeddingResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GenerateEmbeddings([FromBody] NomicEmbeddingRequest request)

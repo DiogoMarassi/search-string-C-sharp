@@ -31,7 +31,7 @@ public class PdfReaderService
         }
 
         var output = _extractor.ExtractAllFromFolder(path);
-        //DeletePath.DeleteAllFiles(path);
+        DeletePath.DeleteAllFiles(path);
 
         return output;
     }

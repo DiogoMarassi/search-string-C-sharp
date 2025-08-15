@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MyApp.Services;
+using MyApp.DTOs;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -14,7 +15,7 @@ public class SnowballingController : ControllerBase
 
     /// Retorna as citações de um artigo a partir do DOI
     [HttpGet("citations")]
-    public async Task<ActionResult<List<SnowballingService.ArticleInfo>>> GetCitations(
+    public async Task<ActionResult<List<ArticleInfo>>> GetCitations(
         [FromQuery] string doi)
     {
         if (string.IsNullOrWhiteSpace(doi))
@@ -26,7 +27,7 @@ public class SnowballingController : ControllerBase
 
     /// Retorna as referências de um artigo a partir do DOI
     [HttpGet("references")]
-    public async Task<ActionResult<List<SnowballingService.ArticleInfo>>> GetReferences(
+    public async Task<ActionResult<List<ArticleInfo>>> GetReferences(
         [FromQuery] string doi)
     {
         if (string.IsNullOrWhiteSpace(doi))
@@ -36,9 +37,9 @@ public class SnowballingController : ControllerBase
         return Ok(results);
     }
 
-    /// Executa o snowballing (referências + citaçõGenerateSnowballingAsynces) a partir de uma lista de artigos iniciais
-    [HttpPost("snowballing")]
-    public async Task<ActionResult<List<SnowballingService.ArticleInfo>>> GenerateSnowballing(
+    /// Executa o snowballing (referências + citações) a partir de uma lista de artigos iniciais
+    [HttpPost("cit-and-ref")]
+    public async Task<ActionResult<List<ArticleInfo>>> GenerateSnowballing(
         [FromBody] List<string> DOIs)
     {
         if (DOIs == null || DOIs.Count == 0)

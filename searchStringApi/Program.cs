@@ -36,7 +36,7 @@ builder.Services.AddScoped<TextPreprocessing>();
 builder.Services.AddScoped<NGrams>();
 builder.Services.AddScoped<Clustering>();
 builder.Services.AddScoped<Filtering>();
-builder.Services.AddScoped<SearchService>();
+builder.Services.AddScoped<CombinePapersService>();
 builder.Services.AddScoped<Embedding>(sp =>
 {
     var apiKey = Environment.GetEnvironmentVariable("NOMIC_API_KEY");

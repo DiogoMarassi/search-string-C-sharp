@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using MyApp.Services;
-
+using MyApp.DTOs;
 namespace YourApp.Api.Controllers;
 
 [ApiController]
@@ -19,9 +19,9 @@ public sealed class CombinePapersController : ControllerBase
 
 
     [HttpPost("search")]
-    [ProducesResponseType(typeof(IReadOnlyList<ApiPaperMiner>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IReadOnlyList<ArticlePaperMiner>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<IReadOnlyList<ApiPaperMiner>>> Search(
+    public async Task<ActionResult<IReadOnlyList<ArticlePaperMiner>>> Search(
         [FromBody] CombinePapersRequest request,
         CancellationToken cancellationToken)
     {
@@ -50,10 +50,7 @@ public sealed class CombinePapersController : ControllerBase
             request.Keywords,
             request.StartYear,
             request.EndYear,
-            request.WithPdf,
-            request.WithIssn,
             request.SecurityLimit,
-            request.WithPreprint,
             cancellationToken
         );
 
