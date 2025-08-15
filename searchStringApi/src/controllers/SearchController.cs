@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using MyApp.Services;
 using MyApp.DTOs;
-namespace YourApp.Api.Controllers;
+namespace MyApp.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

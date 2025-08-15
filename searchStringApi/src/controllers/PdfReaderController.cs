@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using MyApp.DTOs;
-
 using MyApp.Services;
 using MyApp.Models;
 
+namespace MyApp.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class PdfReaderController : ControllerBase

@@ -1,9 +1,8 @@
-#nullable enable
 using Microsoft.AspNetCore.Mvc;
 using MyApp.Services.Search;
 using MyApp.DTOs;
 
-namespace YourApp.Api.Controllers;
+namespace MyApp.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
